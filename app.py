@@ -87,25 +87,24 @@ with st.container(border=True):
 with st.container(border=True):
     st.write("##### 3. Input Produk")
     
-    # 1. Input Barcode dulu
+    # 1. Pencarian Otomatis
     input_barcode = st.text_input("Masukkan Barcode")
-    
-    # Cari prodname otomatis
     auto_prodname = ""
+    
     if input_barcode:
         match = product_db[product_db['Barcode'] == input_barcode]
         if not match.empty:
             auto_prodname = match.iloc[0]['Prodname']
             st.success(f"Produk ditemukan: {auto_prodname}")
         else:
-            st.warning("Barcode tidak ditemukan di database.")
+            st.warning("Barcode tidak ditemukan.")
 
     # 2. Form Input
-    with st.form("input_form", clear_on_submit=False):
+    with st.form("input_form", clear_on_submit=True):
         c1, c2 = st.columns(2)
-        # Barcode dan Prodname yang sudah di-isi otomatis
-        barcode = c1.text_input("Barcode", value=input_barcode)
-        prodname = c2.text_input("Prodname", value=auto_prodname)
+        # Kita gunakan disabled=True agar user tidak bisa mengubah data yang sudah otomatis
+        barcode = c1.text_input("Barcode", value=input_barcode, disabled=True)
+        prodname = c2.text_input("Prodname", value=auto_prodname, disabled=True)
         
         c3, c4, c5 = st.columns(3)
         qty = c3.number_input("QTY", min_value=0, step=1, format="%d")
@@ -113,9 +112,13 @@ with st.container(border=True):
         harga_cust = c5.number_input("Harga Customer", min_value=0, step=1, format="%d")
         no_pengajuan = st.text_input("No Pengajuan HK Buyer")
         submitted = st.form_submit_button("Cek Perhitungan")
-    
+
+    # Saat simpan ke daftar, ambil nilai dari variabel di atas (bukan dari input form bawah)
     if submitted:
+        # Gunakan variabel input_barcode & auto_prodname langsung
         st.session_state.temp = {
+            "barcode": input_barcode,
+            "prodname": auto_prodname,
             "gap": hk_buyer - harga_cust,
             "persen": ((hk_buyer - harga_cust) / hk_buyer * 100) if hk_buyer != 0 else 0,
             "potensi": qty * hk_buyer,
