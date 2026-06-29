@@ -95,7 +95,7 @@ if st.session_state.daftar_pengajuan:
                 if merged_range.min_row >= 14:
                     ws.unmerge_cells(str(merged_range))
 
-            # 3. Tulis Data Produk mulai dari baris 14
+            # 2. Tulis Data Produk mulai dari baris 14
             formats = {2: '@', 3: '@', 4: '@', 5: '@', 6: '0', 7: '#,##0', 8: '@', 9: '#,##0', 10: '#,##0', 12: '#,##0', 13: '#,##0'}
             
             for i, item in enumerate(st.session_state.daftar_pengajuan):
@@ -112,8 +112,15 @@ if st.session_state.daftar_pengajuan:
                 
                 for col_idx, value in enumerate(data_row, start=1):
                     cell = ws.cell(row=row, column=col_idx, value=value)
-                    cell.alignment = center_align 
                     
+                    # LOGIKA ALIGNMENT:
+                    # Jika kolom 5 (Prodname), maka rata kiri (left). Selain itu rata tengah (center).
+                    if col_idx == 5:
+                        cell.alignment = Alignment(horizontal='left', vertical='center')
+                    else:
+                        cell.alignment = center_align # center_align sudah didefinisikan sebelumnya
+                    
+                    # Terapkan format spesifik
                     if col_idx in [11, 14]: cell.number_format = '0.00%'
                     elif col_idx in formats: cell.number_format = formats[col_idx]
 
