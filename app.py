@@ -24,28 +24,40 @@ def simpan_ke_googlesheets(data_list):
         client = gspread.service_account_from_dict(creds_dict)
         sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1qcixEUIKDJHebYxqqEHnZNDqhX_kEdKcbSfJx4guvwU/edit").sheet1
         
+        # 1. Cari baris kosong pertama setelah header (baris 6)
+        # Kita mulai cek dari baris 6, sampai ketemu yang kosong
+        data_exist = sheet.get_all_values()
+        next_row = len(data_exist) + 1 
+        
         for item in data_list:
-            # Sesuaikan urutan ini dengan header di spreadsheet Anda:
-            # A(No) B(No Cust) C(Nama) D(Barcode) E(Prodname) F(QTY) G(HK) H(No Pengajuan) I(Harga) J(Gap Value) K(Gap %) L(Potensi) M(Support Total) N(Support %)
-            row_values = [
-                item.get('No Cust'),           # No Customer
-                item.get('Nama'),              # Nama Customer
-                item.get('Barcode'),           # Barcode
-                item.get('Prodname'),          # Prodname
-                item.get('QTY'),               # QTY
-                item.get('HK'),                # HK Buyer
-                item.get('No Pengajuan'),      # No Pengajuan HK Buyer
-                item.get('Harga'),             # Harga Customer
-                item.get('gap'),               # Gap Value (J)
-                item.get('persen'),            # Gap % (K)
-                item.get('potensi'),           # Potensi Sales (L)
-                item.get('support'),           # Support Total (M)
-                item.get('rasio')              # Support % (N)
+            # 2. Definisikan sel secara spesifik sesuai kolom yang Anda inginkan
+            # Kolom A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=10, K=11, L=12, M=13, N=14
+            
+            # Kita isi kolom A sampai N
+            updates = [
+                {'range': f'A{next_row}', 'values': [[next_row - 5]]}, # No (Urutan)
+                {'range': f'B{next_row}', 'values': [[item.get('No Cust')]]},
+                {'range': f'C{next_row}', 'values': [[item.get('Nama')]]},
+                {'range': f'D{next_row}', 'values': [[item.get('Barcode')]]},
+                {'range': f'E{next_row}', 'values': [[item.get('Prodname')]]},
+                {'range': f'F{next_row}', 'values': [[item.get('QTY')]]},
+                {'range': f'G{next_row}', 'values': [[item.get('HK')]]},
+                {'range': f'H{next_row}', 'values': [[item.get('No Pengajuan')]]},
+                {'range': f'I{next_row}', 'values': [[item.get('Harga')]]},
+                {'range': f'J{next_row}', 'values': [[item.get('gap')]]},
+                {'range': f'K{next_row}', 'values': [[item.get('persen')]]},
+                {'range': f'L{next_row}', 'values': [[item.get('potensi')]]},
+                {'range': f'M{next_row}', 'values': [[item.get('support')]]},
+                {'range': f'N{next_row}', 'values': [[item.get('rasio')]]}
             ]
-            sheet.append_row(row_values)
+            
+            # Kirim semua update sekaligus untuk baris ini
+            sheet.batch_update(updates)
+            next_row += 1 # Pindah ke baris berikutnya untuk data selanjutnya
+            
     except Exception as e:
         st.error(f"Gagal simpan ke Sheets: {e}")
-
+        
 # --- UI INPUT ---
 st.title("Form Pengajuan Voucher Big Sales")
 with st.container(border=True):
