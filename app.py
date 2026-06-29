@@ -9,9 +9,12 @@ import gspread
 @st.cache_data
 def load_product_db():
     # Pastikan file prodname.xlsx ada di folder yang sama
-    df = pd.read_excel("prodname.xlsx")
-    # Pastikan barcode dibaca sebagai string agar cocok dengan input text
-    df['Barcode'] = df['Barcode'].astype(str)
+    # dtype={'Barcode': str} memaksa kolom Barcode dibaca sebagai teks, 
+    # sehingga angka 0 di depan tidak akan hilang.
+    df = pd.read_excel("prodname.xlsx", dtype={'Barcode': str})
+    
+    # Menghapus spasi tambahan jika ada
+    df['Barcode'] = df['Barcode'].str.strip()
     return df
 
 product_db = load_product_db()
