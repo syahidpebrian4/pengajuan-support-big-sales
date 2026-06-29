@@ -115,7 +115,7 @@ if st.session_state.daftar_pengajuan:
                     
                     # LOGIKA ALIGNMENT:
                     # Jika kolom 5 (Prodname), maka rata kiri (left). Selain itu rata tengah (center).
-                    if col_idx == 5:
+                    if col_idx in [3, 5]:
                         cell.alignment = Alignment(horizontal='left', vertical='center')
                     else:
                         cell.alignment = center_align # center_align sudah didefinisikan sebelumnya
