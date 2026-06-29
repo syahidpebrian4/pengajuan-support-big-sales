@@ -5,6 +5,17 @@ from openpyxl.styles import Alignment
 from io import BytesIO
 import gspread
 
+# --- LOAD DATABASE PRODUK ---
+@st.cache_data
+def load_product_db():
+    # Pastikan file prodname.xlsx ada di folder yang sama
+    df = pd.read_excel("prodname.xlsx")
+    # Pastikan barcode dibaca sebagai string agar cocok dengan input text
+    df['Barcode'] = df['Barcode'].astype(str)
+    return df
+
+product_db = load_product_db()
+
 # --- SETUP ---
 st.set_page_config(page_title="Pengajuan Voucher", layout="wide")
 
@@ -69,12 +80,30 @@ with st.container(border=True):
     no_cust = col3.text_input("No. Customer")
     nama_cust = col4.text_input("Nama Customer")
 
+# --- KOTAK 3: INPUT PRODUK ---
 with st.container(border=True):
     st.write("##### 3. Input Produk")
+    
+    # 1. Input Barcode dulu
+    input_barcode = st.text_input("Masukkan Barcode")
+    
+    # Cari prodname otomatis
+    auto_prodname = ""
+    if input_barcode:
+        match = product_db[product_db['Barcode'] == input_barcode]
+        if not match.empty:
+            auto_prodname = match.iloc[0]['Prodname']
+            st.success(f"Produk ditemukan: {auto_prodname}")
+        else:
+            st.warning("Barcode tidak ditemukan di database.")
+
+    # 2. Form Input
     with st.form("input_form", clear_on_submit=False):
         c1, c2 = st.columns(2)
-        barcode = c1.text_input("Barcode")
-        prodname = c2.text_input("Prodname")
+        # Barcode dan Prodname yang sudah di-isi otomatis
+        barcode = c1.text_input("Barcode", value=input_barcode)
+        prodname = c2.text_input("Prodname", value=auto_prodname)
+        
         c3, c4, c5 = st.columns(3)
         qty = c3.number_input("QTY", min_value=0, step=1, format="%d")
         hk_buyer = c4.number_input("HK Buyer", min_value=0, step=1, format="%d")
