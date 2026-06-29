@@ -78,6 +78,7 @@ if st.session_state.daftar_pengajuan:
             wb = openpyxl.load_workbook("VCR TEMPLATE.xlsx")
             ws = wb.active
             center_align = Alignment(horizontal='center', vertical='center')
+            left_align = Alignment(horizontal='left', vertical='center')
 
             # 1. Isi Nama TTD di M9 berdasarkan Region
             nama_ttd = {
@@ -87,15 +88,14 @@ if st.session_state.daftar_pengajuan:
             }
             # Menulis ke M9 (kolom 13, baris 9)
             ws.cell(row=9, column=13, value=nama_ttd.get(region, ""))
-            # Pastikan rata tengah
             ws.cell(row=9, column=13).alignment = center_align
             
-            # 2. Bersihkan Merge Cells di area data (baris 14 ke bawah) agar aman
+            # 2. Bersihkan Merge Cells di area data (baris 14 ke bawah)
             for merged_range in list(ws.merged_cells.ranges):
                 if merged_range.min_row >= 14:
                     ws.unmerge_cells(str(merged_range))
 
-            # 2. Tulis Data Produk mulai dari baris 14
+            # 3. Tulis Data Produk mulai dari baris 14
             formats = {2: '@', 3: '@', 4: '@', 5: '@', 6: '0', 7: '#,##0', 8: '@', 9: '#,##0', 10: '#,##0', 12: '#,##0', 13: '#,##0'}
             
             for i, item in enumerate(st.session_state.daftar_pengajuan):
@@ -113,12 +113,11 @@ if st.session_state.daftar_pengajuan:
                 for col_idx, value in enumerate(data_row, start=1):
                     cell = ws.cell(row=row, column=col_idx, value=value)
                     
-                    # LOGIKA ALIGNMENT:
-                    # Jika kolom 5 (Prodname), maka rata kiri (left). Selain itu rata tengah (center).
-                    if col_idx in [3, 5]:
-                        cell.alignment = Alignment(horizontal='left', vertical='center')
+                    # LOGIKA ALIGNMENT
+                    if col_idx in [3, 5]: # Nama (3) & Prodname (5) rata kiri
+                        cell.alignment = left_align
                     else:
-                        cell.alignment = center_align # center_align sudah didefinisikan sebelumnya
+                        cell.alignment = center_align
                     
                     # Terapkan format spesifik
                     if col_idx in [11, 14]: cell.number_format = '0.00%'
@@ -127,7 +126,7 @@ if st.session_state.daftar_pengajuan:
             buffer = BytesIO()
             wb.save(buffer)
             st.download_button("Download Excel Rapi", buffer.getvalue(), f"Pengajuan_{store}.xlsx")
-            st.success("File berhasil disiapkan dengan TTD yang sesuai!")
+            st.success("File berhasil disiapkan!")
         except Exception as e:
             st.error(f"Terjadi kesalahan: {e}")
 
