@@ -22,14 +22,25 @@ def simpan_ke_googlesheets(data_list):
     try:
         creds_dict = dict(st.secrets["gcp"])
         client = gspread.service_account_from_dict(creds_dict)
-        # Buka berdasarkan URL agar akurat
         sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1qcixEUIKDJHebYxqqEHnZNDqhX_kEdKcbSfJx4guvwU/edit").sheet1
+        
         for item in data_list:
+            # Sesuaikan urutan ini dengan header di spreadsheet Anda:
+            # A(No) B(No Cust) C(Nama) D(Barcode) E(Prodname) F(QTY) G(HK) H(No Pengajuan) I(Harga) J(Gap Value) K(Gap %) L(Potensi) M(Support Total) N(Support %)
             row_values = [
-                item.get('No Cust'), item.get('Nama'), item.get('Barcode'), 
-                item.get('Prodname'), item.get('QTY'), item.get('HK'), 
-                item.get('No Pengajuan'), item.get('Harga'), item.get('gap'), 
-                item.get('persen'), item.get('potensi'), item.get('support'), item.get('rasio')
+                item.get('No Cust'),           # No Customer
+                item.get('Nama'),              # Nama Customer
+                item.get('Barcode'),           # Barcode
+                item.get('Prodname'),          # Prodname
+                item.get('QTY'),               # QTY
+                item.get('HK'),                # HK Buyer
+                item.get('No Pengajuan'),      # No Pengajuan HK Buyer
+                item.get('Harga'),             # Harga Customer
+                item.get('gap'),               # Gap Value (J)
+                item.get('persen'),            # Gap % (K)
+                item.get('potensi'),           # Potensi Sales (L)
+                item.get('support'),           # Support Total (M)
+                item.get('rasio')              # Support % (N)
             ]
             sheet.append_row(row_values)
     except Exception as e:
