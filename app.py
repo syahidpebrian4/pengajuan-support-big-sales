@@ -9,10 +9,7 @@ from datetime import datetime
 # --- LOAD DATABASE PRODUK ---
 @st.cache_data
 def load_product_db():
-    # Pastikan file prodname.xlsx ada di folder yang sama
     df = pd.read_excel("prodname.xlsx", dtype={'Barcode': str})
-    
-    # Menghapus spasi tambahan jika ada
     df['Barcode'] = df['Barcode'].str.strip()
     return df
 
@@ -21,7 +18,6 @@ product_db = load_product_db()
 # --- SETUP ---
 st.set_page_config(page_title="Pengajuan Voucher", layout="wide")
 
-# --- DATA REGION & TOKO ---
 data_toko = {
     "Region 1": ["Pasar Rebo", "Kelapa Gading", "Ciputat", "Alam Sutera", "Medan", "Palembang", "Pekannbaru", "Jatake", "Serang", "Batam", "Lampung", "Serpong"],
     "Region 2": ["Meruya", "Bandung", "Cibitung", "Bekasi", "Cikarang", "Cirebon", "Bogor", "Tasikmalaya", "Pakansari", "Kerawang", "Cimahi", "Tegal"],
@@ -32,7 +28,7 @@ if 'daftar_pengajuan' not in st.session_state:
     st.session_state.daftar_pengajuan = []
 
 # --- FUNGSI GOOGLE SHEETS ---
-def simpan_ke_googlesheets(data_list, store_val): # Tambahkan parameter store_val
+def simpan_ke_googlesheets(data_list, store_val):
     try:
         creds_dict = dict(st.secrets["gcp"])
         client = gspread.service_account_from_dict(creds_dict)
@@ -126,34 +122,28 @@ with st.container(border=True):
         m5.metric("Rasio Voucher", f"{st.session_state.temp['rasio']:,.2f}%")
         
         if st.button("Tambah ke Daftar"):
-            # Gabungkan langsung, tidak perlu membuat dua kali
             item_data = {
-                "No Cust": no_cust, 
-                "Nama": nama_cust, 
-                "Barcode": input_barcode, # Gunakan input_barcode langsung
-                "Prodname": auto_prodname, # Gunakan auto_prodname langsung
-                "QTY": qty, 
-                "HK": hk_buyer, 
-                "Harga Cust": harga_cust, 
-                "No Pengajuan": no_pengajuan, 
-                "Keterangan": ket
+                "No Cust": no_cust, "Nama": nama_cust, "Barcode": input_barcode, 
+                "Prodname": auto_prodname, "QTY": qty, "HK": hk_buyer, 
+                "Harga Cust": harga_cust, "No Pengajuan": no_pengajuan
             }
-            # Tambahkan data perhitungan dari temp
             item_data.update(st.session_state.temp)
+            item_data["Keterangan"] = ket
             
-            # Hapus key yang duplikat jika ada (opsional, agar bersih)
             if 'barcode' in item_data: del item_data['barcode']
             if 'prodname' in item_data: del item_data['prodname']
             
             st.session_state.daftar_pengajuan.append(item_data)
-            
             del st.session_state.temp
             st.rerun()
 
 # --- DAFTAR & GENERATE ---
 if st.session_state.daftar_pengajuan:
     st.write("### Daftar Pengajuan")
-    st.table(pd.DataFrame(st.session_state.daftar_pengajuan))
+    df_tampil = pd.DataFrame(st.session_state.daftar_pengajuan)
+    kolom_urut = ["No Cust", "Nama", "Barcode", "Prodname", "QTY", "HK", "Harga Cust", 
+                  "No Pengajuan", "gap", "persen", "potensi", "support", "rasio", "Keterangan"]
+    st.table(df_tampil[kolom_urut])
     
     if st.button("Generate & Download Excel"):
         try:
