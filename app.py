@@ -111,6 +111,7 @@ with st.container(border=True):
         hk_buyer = c4.number_input("HK Buyer", min_value=0, step=1, format="%d")
         harga_cust = c5.number_input("Harga Customer", min_value=0, step=1, format="%d")
         no_pengajuan = st.text_input("No Pengajuan HK Buyer")
+        ket = st.text_input("Keterangan")
         submitted = st.form_submit_button("Cek Perhitungan")
 
     # Saat simpan ke daftar, ambil nilai dari variabel di atas (bukan dari input form bawah)
@@ -139,7 +140,7 @@ with st.container(border=True):
         if st.button("Tambah ke Daftar"):
             st.session_state.daftar_pengajuan.append({
                 "No Cust": no_cust, "Nama": nama_cust, "Barcode": barcode, "Prodname": prodname,
-                "QTY": qty, "HK": hk_buyer, "Harga": harga_cust, "No Pengajuan": no_pengajuan,
+                "QTY": qty, "HK": hk_buyer, "Harga": harga_cust, "No Pengajuan": no_pengajuan, "Keterangan": ket
                 **st.session_state.temp
             })
             del st.session_state.temp
