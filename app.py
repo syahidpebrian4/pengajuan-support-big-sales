@@ -143,7 +143,7 @@ if st.session_state.daftar_pengajuan:
     
     if st.button("Generate & Download Excel"):
         try:
-            simpan_ke_googlesheets(st.session_state.daftar_pengajuan)
+            simpan_ke_googlesheets(st.session_state.daftar_pengajuan, store)
             
             wb = openpyxl.load_workbook("VCR TEMPLATE.xlsx")
             ws = wb.active
