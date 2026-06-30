@@ -103,7 +103,7 @@ with st.container(border=True):
         harga_cust = c5.number_input("Harga Customer", min_value=0, step=1, format="%d")
         no_pengajuan = st.text_input("No Pengajuan HK Buyer")
         ket = st.text_input("Keterangan")
-        submitted = st.form_submit_button("Cek Perhitungan")
+        submitted = st.form_submit_button("Cek")
 
     if submitted:
         st.session_state.temp = {
