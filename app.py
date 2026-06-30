@@ -56,6 +56,7 @@ def simpan_ke_googlesheets(data_list):
                 {'range': f'L{next_row}', 'values': [[item.get('potensi')]]},
                 {'range': f'M{next_row}', 'values': [[item.get('support')]]},
                 {'range': f'N{next_row}', 'values': [[item.get('rasio')]]}
+                {'range': f'O{next_row}', 'values': [[item.get('Keterangan')]]}
             ]
             sheet.batch_update(updates)
             next_row += 1 
@@ -159,7 +160,7 @@ if st.session_state.daftar_pengajuan:
                             str(item.get('Prodname', '')), int(item.get('QTY', 0)), int(item.get('HK', 0)), 
                             str(item.get('No Pengajuan', '')), int(item.get('Harga', 0)), int(item.get('gap', 0)), 
                             item.get('persen', 0) / 100, int(item.get('potensi', 0)), int(item.get('support', 0)), 
-                            item.get('rasio', 0) / 100]
+                            item.get('rasio', 0) / 100, str(item.get('Keterangan', ''))]
                 
                 for col_idx, value in enumerate(data_row, start=1):
                     cell = ws.cell(row=row, column=col_idx, value=value)
