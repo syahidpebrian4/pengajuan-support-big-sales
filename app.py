@@ -125,7 +125,7 @@ with st.container(border=True):
         m4.metric("Support Voucher", f"{st.session_state.temp['support']:,.0f}")
         m5.metric("Rasio Voucher", f"{st.session_state.temp['rasio']:,.2f}%")
         
-        iif st.button("Tambah ke Daftar"):
+        if st.button("Tambah ke Daftar"):
             # Gabungkan langsung, tidak perlu membuat dua kali
             item_data = {
                 "No Cust": no_cust, 
