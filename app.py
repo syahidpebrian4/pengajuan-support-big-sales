@@ -54,7 +54,7 @@ def simpan_ke_googlesheets(data_list, store_val): # Tambahkan parameter store_va
                 {'range': f'H{next_row}', 'values': [[item.get('QTY')]]},
                 {'range': f'I{next_row}', 'values': [[item.get('HK')]]},
                 {'range': f'J{next_row}', 'values': [[item.get('No Pengajuan')]]},
-                {'range': f'K{next_row}', 'values': [[item.get('Harga')]]},
+                {'range': f'K{next_row}', 'values': [[item.get('Harga Cust')]]},
                 {'range': f'L{next_row}', 'values': [[item.get('gap')]]},
                 {'range': f'M{next_row}', 'values': [[item.get('persen')]]},
                 {'range': f'N{next_row}', 'values': [[item.get('potensi')]]},
@@ -134,7 +134,7 @@ with st.container(border=True):
                 "Prodname": auto_prodname, # Gunakan auto_prodname langsung
                 "QTY": qty, 
                 "HK": hk_buyer, 
-                "Harga": harga_cust, 
+                "Harga Cust": harga_cust, 
                 "No Pengajuan": no_pengajuan, 
                 "Keterangan": ket
             }
@@ -176,7 +176,7 @@ if st.session_state.daftar_pengajuan:
                 row = 14 + i
                 data_row = [i + 1, str(item.get('No Cust', '')), str(item.get('Nama', '')), str(item.get('Barcode', '')), 
                             str(item.get('Prodname', '')), int(item.get('QTY', 0)), int(item.get('HK', 0)), 
-                            str(item.get('No Pengajuan', '')), int(item.get('Harga', 0)), int(item.get('gap', 0)), 
+                            str(item.get('No Pengajuan', '')), int(item.get('Harga Cust', 0)), int(item.get('gap', 0)), 
                             item.get('persen', 0) / 100, int(item.get('potensi', 0)), int(item.get('support', 0)), 
                             item.get('rasio', 0) / 100, str(item.get('Keterangan', ''))]
                 
