@@ -154,7 +154,7 @@ if st.session_state.daftar_pengajuan:
     urutan_kolom = [
         "No Cust", "Nama", "Barcode", "Prodname", "QTY", "HK", 
         "Harga Cust", "No Pengajuan", "Gap", "Persen", "Potensi", 
-        "Support", "Rasio", "Keterangan" ]
+        "Support", "Rasio", "Keterangan"]
 
     df_tampil = df_tampil[urutan_kolom]
     st.table(df_tampil)
