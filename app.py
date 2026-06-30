@@ -55,11 +55,11 @@ def simpan_ke_googlesheets(data_list, store_val):
                 {'range': f'I{next_row}', 'values': [[item.get('HK')]]},
                 {'range': f'J{next_row}', 'values': [[item.get('No Pengajuan')]]},
                 {'range': f'K{next_row}', 'values': [[item.get('Harga Cust')]]},
-                {'range': f'L{next_row}', 'values': [[item.get('Gap')]]},
-                {'range': f'M{next_row}', 'values': [[item.get('Persen')]]},
-                {'range': f'N{next_row}', 'values': [[item.get('Potensi')]]},
-                {'range': f'O{next_row}', 'values': [[item.get('Support')]]},
-                {'range': f'P{next_row}', 'values': [[item.get('Rasio')]]},
+                {'range': f'L{next_row}', 'values': [[item.get('gap')]]},
+                {'range': f'M{next_row}', 'values': [[item.get('persen')]]},
+                {'range': f'N{next_row}', 'values': [[item.get('potensi')]]},
+                {'range': f'O{next_row}', 'values': [[item.get('support')]]},
+                {'range': f'P{next_row}', 'values': [[item.get('rasio')]]},
                 {'range': f'Q{next_row}', 'values': [[item.get('Keterangan')]]}
             ]
             sheet.batch_update(updates)
@@ -109,21 +109,21 @@ with st.container(border=True):
         st.session_state.temp = {
             "barcode": input_barcode,
             "prodname": auto_prodname,
-            "Gap": hk_buyer - harga_cust,
-            "Persen": ((hk_buyer - harga_cust) / hk_buyer * 100) if hk_buyer != 0 else 0,
-            "Potensi": qty * hk_buyer,
-            "Support": qty * (hk_buyer - harga_cust),
-            "Rasio": ((qty * (hk_buyer - harga_cust)) / (qty * hk_buyer) * 100) if (qty * hk_buyer) != 0 else 0
+            "gap": hk_buyer - harga_cust,
+            "persen": ((hk_buyer - harga_cust) / hk_buyer * 100) if hk_buyer != 0 else 0,
+            "potensi": qty * hk_buyer,
+            "support": qty * (hk_buyer - harga_cust),
+            "rasio": ((qty * (hk_buyer - harga_cust)) / (qty * hk_buyer) * 100) if (qty * hk_buyer) != 0 else 0
         }
 
     if 'temp' in st.session_state:
         m1, m2, m3 = st.columns(3)
-        m1.metric("Gap (Value)", f"{st.session_state.temp['Gap']:,.0f}")
-        m2.metric("Gap (%)", f"{st.session_state.temp['Persen']:,.2f}%")
-        m3.metric("Potensi Sales", f"{st.session_state.temp['Potensi']:,.0f}")
+        m1.metric("Gap (Value)", f"{st.session_state.temp['gap']:,.0f}")
+        m2.metric("Gap (%)", f"{st.session_state.temp['persen']:,.2f}%")
+        m3.metric("Potensi Sales", f"{st.session_state.temp['potensi']:,.0f}")
         m4, m5 = st.columns(2)
-        m4.metric("Support Voucher", f"{st.session_state.temp['Support']:,.0f}")
-        m5.metric("Rasio Voucher", f"{st.session_state.temp['Rasio']:,.2f}%")
+        m4.metric("Support Voucher", f"{st.session_state.temp['support']:,.0f}")
+        m5.metric("Rasio Voucher", f"{st.session_state.temp['rasio']:,.2f}%")
         
         if st.button("Tambah ke Daftar"):
             item_data = {
@@ -153,8 +153,9 @@ if st.session_state.daftar_pengajuan:
 
     urutan_kolom = [
         "No Cust", "Nama", "Barcode", "Prodname", "QTY", "HK", 
-        "Harga Cust", "No Pengajuan", "Gap", "Persen", "Potensi", 
-        "Support", "Rasio", "Keterangan"]
+        "Harga Cust", "No Pengajuan", "gap", "persen", "potensi", 
+        "support", "rasio", "Keterangan"
+    ]
 
     df_tampil = df_tampil[urutan_kolom]
     st.table(df_tampil)
@@ -180,9 +181,9 @@ if st.session_state.daftar_pengajuan:
                 row = 14 + i
                 data_row = [i + 1, str(item.get('No Cust', '')), str(item.get('Nama', '')), str(item.get('Barcode', '')), 
                             str(item.get('Prodname', '')), int(item.get('QTY', 0)), int(item.get('HK', 0)), 
-                            str(item.get('No Pengajuan', '')), int(item.get('Harga Cust', 0)), int(item.get('Gap', 0)), 
-                            item.get('Persen', 0) / 100, int(item.get('Potensi', 0)), int(item.get('Support', 0)), 
-                            item.get('Rasio', 0) / 100, str(item.get('Keterangan', ''))]
+                            str(item.get('No Pengajuan', '')), int(item.get('Harga Cust', 0)), int(item.get('gap', 0)), 
+                            item.get('persen', 0) / 100, int(item.get('potensi', 0)), int(item.get('support', 0)), 
+                            item.get('rasio', 0) / 100, str(item.get('Keterangan', ''))]
                 
                 for col_idx, value in enumerate(data_row, start=1):
                     cell = ws.cell(row=row, column=col_idx, value=value)
