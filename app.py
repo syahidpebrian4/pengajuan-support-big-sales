@@ -65,21 +65,17 @@ def simpan_ke_googlesheets(data_list, store_val):
         
 # --- UI INPUT ---
 st.title("Form Pengajuan Voucher Big Sales")
-with st.container(border=True):
-    col1, col2 = st.columns(2)
-    region = col1.selectbox("Region", list(data_toko.keys()))
-    store = col2.selectbox("Store", data_toko[region])
-with st.container(border=True):
-    col3, col4 = st.columns(2)
-    no_cust = col3.text_input("No. Customer")
-    nama_cust = col4.text_input("Nama Customer")
+col1, col2 = st.columns(2)
+region = col1.selectbox("Region", list(data_toko.keys()))
+store = col2.selectbox("Store", data_toko[region])
+col3, col4 = st.columns(2)
+no_cust = col3.text_input("No. Customer")
+nama_cust = col4.text_input("Nama Customer")
 
-# --- KOTAK 3: INPUT PRODUK ---
 with st.container(border=True):
     st.write("##### 3. Input Produk")
     input_barcode = st.text_input("Masukkan Barcode")
     auto_prodname = ""
-    
     if input_barcode:
         match = product_db[product_db['Barcode'] == input_barcode]
         if not match.empty:
@@ -92,7 +88,6 @@ with st.container(border=True):
         c1, c2 = st.columns(2)
         barcode = c1.text_input("Barcode", value=input_barcode, disabled=True)
         prodname = c2.text_input("Prodname", value=auto_prodname, disabled=True)
-        
         c3, c4, c5 = st.columns(3)
         qty = c3.number_input("QTY", min_value=0, step=1, format="%d")
         hk_buyer = c4.number_input("HK Buyer", min_value=0, step=1, format="%d")
@@ -103,8 +98,7 @@ with st.container(border=True):
 
     if submitted:
         st.session_state.temp = {
-            "barcode": input_barcode,
-            "prodname": auto_prodname,
+            "barcode": input_barcode, "prodname": auto_prodname,
             "gap": hk_buyer - harga_cust,
             "persen": ((hk_buyer - harga_cust) / hk_buyer * 100) if hk_buyer != 0 else 0,
             "potensi": qty * hk_buyer,
@@ -117,22 +111,15 @@ with st.container(border=True):
         m1.metric("Gap (Value)", f"{st.session_state.temp['gap']:,.0f}")
         m2.metric("Gap (%)", f"{st.session_state.temp['persen']:,.2f}%")
         m3.metric("Potensi Sales", f"{st.session_state.temp['potensi']:,.0f}")
-        m4, m5 = st.columns(2)
-        m4.metric("Support Voucher", f"{st.session_state.temp['support']:,.0f}")
-        m5.metric("Rasio Voucher", f"{st.session_state.temp['rasio']:,.2f}%")
-        
         if st.button("Tambah ke Daftar"):
             item_data = {
                 "No Cust": no_cust, "Nama": nama_cust, "Barcode": input_barcode, 
                 "Prodname": auto_prodname, "QTY": qty, "HK": hk_buyer, 
-                "Harga Cust": harga_cust, "No Pengajuan": no_pengajuan
+                "Harga Cust": harga_cust, "No Pengajuan": no_pengajuan, "Keterangan": ket
             }
             item_data.update(st.session_state.temp)
-            item_data["Keterangan"] = ket
-            
             if 'barcode' in item_data: del item_data['barcode']
             if 'prodname' in item_data: del item_data['prodname']
-            
             st.session_state.daftar_pengajuan.append(item_data)
             del st.session_state.temp
             st.rerun()
@@ -140,61 +127,30 @@ with st.container(border=True):
 # --- DAFTAR & GENERATE ---
 if st.session_state.daftar_pengajuan:
     st.write("### Daftar Pengajuan")
-    
-    # 1. Buat DataFrame dari list dictionary
     df_tampil = pd.DataFrame(st.session_state.daftar_pengajuan)
-    
-    # 2. Pastikan semua kolom yang kita inginkan ada di DataFrame
-    # Jika ada key yang kurang, kita tambahkan kolom kosong agar tidak error
     kolom_urut = ["No Cust", "Nama", "Barcode", "Prodname", "QTY", "HK", "Harga Cust", 
                   "No Pengajuan", "gap", "persen", "potensi", "support", "rasio", "Keterangan"]
-    
-    for col in kolom_urut:
-        if col not in df_tampil.columns:
-            df_tampil[col] = "" # Isi dengan kosong jika kolom tidak ditemukan
-            
-    # 3. Tampilkan hanya kolom yang diurutkan
-    st.table(df_tampil[kolom_urut])
+    # Tampilkan hanya kolom yang ada di list kolom_urut
+    st.table(df_tampil[[c for c in kolom_urut if c in df_tampil.columns]])
     
     if st.button("Generate & Download Excel"):
         try:
             simpan_ke_googlesheets(st.session_state.daftar_pengajuan, store)
-            
             wb = openpyxl.load_workbook("VCR TEMPLATE.xlsx")
             ws = wb.active
-            center_align = Alignment(horizontal='center', vertical='center')
-            left_align = Alignment(horizontal='left', vertical='center')
-
-            nama_ttd = {"Region 1": "AZKAHADI PUTRA", "Region 2": "DESKY BAYU AJI", "Region 3": "ADE CHANDRA"}
-            ws.cell(row=9, column=13, value=nama_ttd.get(region, ""))
-            ws.cell(row=9, column=13).alignment = center_align
-            
             for merged_range in list(ws.merged_cells.ranges):
                 if merged_range.min_row >= 14: ws.unmerge_cells(str(merged_range))
-
-            formats = {2: '@', 3: '@', 4: '@', 5: '@', 6: '0', 7: '#,##0', 8: '@', 9: '#,##0', 10: '#,##0', 12: '#,##0', 13: '#,##0'}
             for i, item in enumerate(st.session_state.daftar_pengajuan):
                 row = 14 + i
-                data_row = [i + 1, str(item.get('No Cust', '')), str(item.get('Nama', '')), str(item.get('Barcode', '')), 
-                            str(item.get('Prodname', '')), int(item.get('QTY', 0)), int(item.get('HK', 0)), 
-                            str(item.get('No Pengajuan', '')), int(item.get('Harga Cust', 0)), int(item.get('gap', 0)), 
-                            item.get('persen', 0) / 100, int(item.get('potensi', 0)), int(item.get('support', 0)), 
-                            item.get('rasio', 0) / 100, str(item.get('Keterangan', ''))]
-                
-                for col_idx, value in enumerate(data_row, start=1):
-                    cell = ws.cell(row=row, column=col_idx, value=value)
-                    cell.alignment = left_align if col_idx in [3, 5] else center_align
-                    if col_idx in [11, 14]: cell.number_format = '0.00%'
-                    elif col_idx in formats: cell.number_format = formats[col_idx]
-
+                data_row = [i+1, str(item.get('No Cust','')), str(item.get('Nama','')), str(item.get('Barcode','')), 
+                            str(item.get('Prodname','')), int(item.get('QTY',0)), int(item.get('HK',0)), 
+                            str(item.get('No Pengajuan','')), int(item.get('Harga Cust',0)), int(item.get('gap',0)), 
+                            item.get('persen',0)/100, int(item.get('potensi',0)), int(item.get('support',0)), 
+                            item.get('rasio',0)/100, str(item.get('Keterangan',''))]
+                for col_idx, val in enumerate(data_row, start=1):
+                    ws.cell(row=row, column=col_idx, value=val)
             buffer = BytesIO()
             wb.save(buffer)
-            st.download_button("Download Excel Rapi", buffer.getvalue(), f"Pengajuan_{store}.xlsx")
-            st.success("Data tersimpan ke Sheets & Excel siap!")
-        except Exception as e:
-            st.error(f"Error: {e}")
-
-    if st.button("Reset Daftar"):
-        st.session_state.daftar_pengajuan = []
-        st.rerun()
-        st.rerun()
+            st.download_button("Download Excel", buffer.getvalue(), f"Pengajuan_{store}.xlsx")
+            st.success("Berhasil!")
+        except Exception as e: st.error(f"Error: {e}")
