@@ -149,7 +149,6 @@ with st.container(border=True):
 # --- DAFTAR & GENERATE ---
 if st.session_state.daftar_pengajuan:
     st.write("### Daftar Pengajuan")
-    st.table(pd.DataFrame(st.session_state.daftar_pengajuan))
     df_tampil = pd.DataFrame(st.session_state.daftar_pengajuan)
 
     urutan_kolom = [
