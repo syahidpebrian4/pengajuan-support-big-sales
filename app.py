@@ -98,7 +98,7 @@ with st.container(border=True):
         prodname = c2.text_input("Prodname", value=auto_prodname, disabled=True)
         
         c3, c4, c5 = st.columns(3)
-        qty = c3.number_input("QTY", min_value=0, step=1, format="%d")
+        qty = c3.number_input("QTY (CTN)", min_value=0, step=1, format="%d")
         hk_buyer = c4.number_input("HK Buyer", min_value=0, step=1, format="%d")
         harga_cust = c5.number_input("Harga Customer", min_value=0, step=1, format="%d")
         no_pengajuan = st.text_input("No Pengajuan HK Buyer (UAT)")
