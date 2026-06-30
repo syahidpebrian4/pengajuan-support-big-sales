@@ -4,6 +4,7 @@ import openpyxl
 from openpyxl.styles import Alignment
 from io import BytesIO
 import gspread
+from datetime import datetime
 
 # --- LOAD DATABASE PRODUK ---
 @st.cache_data
@@ -31,11 +32,12 @@ if 'daftar_pengajuan' not in st.session_state:
     st.session_state.daftar_pengajuan = []
 
 # --- FUNGSI GOOGLE SHEETS ---
-def simpan_ke_googlesheets(data_list):
+def simpan_ke_googlesheets(data_list, store_val): # Tambahkan parameter store_val
     try:
         creds_dict = dict(st.secrets["gcp"])
         client = gspread.service_account_from_dict(creds_dict)
         sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1qcixEUIKDJHebYxqqEHnZNDqhX_kEdKcbSfJx4guvwU/edit").sheet1
+        today = datetime.now().strftime("%Y-%m-%d")
         
         data_exist = sheet.get_all_values()
         next_row = len(data_exist) + 1 
@@ -43,20 +45,22 @@ def simpan_ke_googlesheets(data_list):
         for item in data_list:
             updates = [
                 {'range': f'A{next_row}', 'values': [[next_row - 5]]},
-                {'range': f'B{next_row}', 'values': [[item.get('No Cust')]]},
-                {'range': f'C{next_row}', 'values': [[item.get('Nama')]]},
-                {'range': f'D{next_row}', 'values': [[item.get('Barcode')]]},
-                {'range': f'E{next_row}', 'values': [[item.get('Prodname')]]},
-                {'range': f'F{next_row}', 'values': [[item.get('QTY')]]},
-                {'range': f'G{next_row}', 'values': [[item.get('HK')]]},
-                {'range': f'H{next_row}', 'values': [[item.get('No Pengajuan')]]},
-                {'range': f'I{next_row}', 'values': [[item.get('Harga')]]},
-                {'range': f'J{next_row}', 'values': [[item.get('gap')]]},
-                {'range': f'K{next_row}', 'values': [[item.get('persen')]]},
-                {'range': f'L{next_row}', 'values': [[item.get('potensi')]]},
-                {'range': f'M{next_row}', 'values': [[item.get('support')]]},
-                {'range': f'N{next_row}', 'values': [[item.get('rasio')]]},
-                {'range': f'O{next_row}', 'values': [[item.get('Keterangan')]]}
+                {'range': f'B{next_row}', 'values': [[store_val]]}, 
+                {'range': f'C{next_row}', 'values': [[today]]},
+                {'range': f'D{next_row}', 'values': [[item.get('No Cust')]]},
+                {'range': f'E{next_row}', 'values': [[item.get('Nama')]]},
+                {'range': f'F{next_row}', 'values': [[item.get('Barcode')]]},
+                {'range': f'G{next_row}', 'values': [[item.get('Prodname')]]},
+                {'range': f'H{next_row}', 'values': [[item.get('QTY')]]},
+                {'range': f'I{next_row}', 'values': [[item.get('HK')]]},
+                {'range': f'J{next_row}', 'values': [[item.get('No Pengajuan')]]},
+                {'range': f'K{next_row}', 'values': [[item.get('Harga')]]},
+                {'range': f'L{next_row}', 'values': [[item.get('gap')]]},
+                {'range': f'M{next_row}', 'values': [[item.get('persen')]]},
+                {'range': f'N{next_row}', 'values': [[item.get('potensi')]]},
+                {'range': f'O{next_row}', 'values': [[item.get('support')]]},
+                {'range': f'P{next_row}', 'values': [[item.get('rasio')]]},
+                {'range': f'Q{next_row}', 'values': [[item.get('Keterangan')]]}
             ]
             sheet.batch_update(updates)
             next_row += 1 
