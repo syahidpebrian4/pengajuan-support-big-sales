@@ -125,12 +125,26 @@ with st.container(border=True):
         m4.metric("Support Voucher", f"{st.session_state.temp['support']:,.0f}")
         m5.metric("Rasio Voucher", f"{st.session_state.temp['rasio']:,.2f}%")
         
-        if st.button("Tambah ke Daftar"):
+        iif st.button("Tambah ke Daftar"):
+            # Gabungkan langsung, tidak perlu membuat dua kali
             item_data = {
-                "No Cust": no_cust, "Nama": nama_cust, "Barcode": barcode, "Prodname": prodname,
-                "QTY": qty, "HK": hk_buyer, "Harga": harga_cust, "No Pengajuan": no_pengajuan, "Keterangan": ket
+                "No Cust": no_cust, 
+                "Nama": nama_cust, 
+                "Barcode": input_barcode, # Gunakan input_barcode langsung
+                "Prodname": auto_prodname, # Gunakan auto_prodname langsung
+                "QTY": qty, 
+                "HK": hk_buyer, 
+                "Harga": harga_cust, 
+                "No Pengajuan": no_pengajuan, 
+                "Keterangan": ket
             }
+            # Tambahkan data perhitungan dari temp
             item_data.update(st.session_state.temp)
+            
+            # Hapus key yang duplikat jika ada (opsional, agar bersih)
+            if 'barcode' in item_data: del item_data['barcode']
+            if 'prodname' in item_data: del item_data['prodname']
+            
             st.session_state.daftar_pengajuan.append(item_data)
             
             del st.session_state.temp
