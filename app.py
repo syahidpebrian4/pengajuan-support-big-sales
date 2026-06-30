@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import openpyxl
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Border, Side
 from io import BytesIO
 import gspread
 from datetime import datetime
@@ -157,7 +157,8 @@ if st.session_state.daftar_pengajuan:
         "support", "rasio", "Keterangan"
     ]
 
-    df_tampil = df_tampil[urutan_kolom]
+    # Reindex agar urutan kolom sesuai dan tidak error
+    df_tampil = df_tampil.reindex(columns=urutan_kolom)
     st.table(df_tampil)
     
     if st.button("Generate & Download Excel"):
@@ -168,6 +169,8 @@ if st.session_state.daftar_pengajuan:
             ws = wb.active
             center_align = Alignment(horizontal='center', vertical='center')
             left_align = Alignment(horizontal='left', vertical='center')
+            thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), 
+                                 top=Side(style='thin'), bottom=Side(style='thin'))
 
             nama_ttd = {"Region 1": "AZKAHADI PUTRA", "Region 2": "DESKY BAYU AJI", "Region 3": "ADE CHANDRA"}
             ws.cell(row=9, column=13, value=nama_ttd.get(region, ""))
@@ -188,6 +191,7 @@ if st.session_state.daftar_pengajuan:
                 for col_idx, value in enumerate(data_row, start=1):
                     cell = ws.cell(row=row, column=col_idx, value=value)
                     cell.alignment = left_align if col_idx in [3, 5] else center_align
+                    cell.border = thin_border # Menambahkan Border
                     if col_idx in [11, 14]: cell.number_format = '0.00%'
                     elif col_idx in formats: cell.number_format = formats[col_idx]
 
