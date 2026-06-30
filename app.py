@@ -9,7 +9,7 @@ from datetime import datetime
 # --- LOAD DATABASE PRODUK ---
 @st.cache_data
 def load_product_db():
-    # Pastikan file prodname.xlsx ada di folder yang sama
+    #Pastikan file prodname.xlsx ada di folder yang sama
     df = pd.read_excel("prodname.xlsx", dtype={'Barcode': str})
     
     # Menghapus spasi tambahan jika ada
