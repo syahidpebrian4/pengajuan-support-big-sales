@@ -9,12 +9,13 @@ from datetime import datetime
 # --- LOAD DATABASE PRODUK ---
 @st.cache_data
 def load_product_db():
-    #Pastikan file prodname.xlsx ada di folder yang sama
-    df = pd.read_excel("prodname.xlsx", dtype={'Barcode': str})
-    
-    # Menghapus spasi tambahan jika ada
-    df['Barcode'] = df['Barcode'].str.strip()
-    return df
+    # <--- The spaces before this comment or in the lines below are likely the culprit
+    #Pastikan file prodname.xlsx ada di folder yang sama
+    df = pd.read_excel("prodname.xlsx", dtype={'Barcode': str})
+    
+    # Menghapus spasi tambahan jika ada
+    df['Barcode'] = df['Barcode'].str.strip()
+    return df
 
 product_db = load_product_db()
 
