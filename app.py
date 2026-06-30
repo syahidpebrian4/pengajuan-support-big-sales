@@ -55,7 +55,7 @@ def simpan_ke_googlesheets(data_list):
                 {'range': f'K{next_row}', 'values': [[item.get('persen')]]},
                 {'range': f'L{next_row}', 'values': [[item.get('potensi')]]},
                 {'range': f'M{next_row}', 'values': [[item.get('support')]]},
-                {'range': f'N{next_row}', 'values': [[item.get('rasio')]]}
+                {'range': f'N{next_row}', 'values': [[item.get('rasio')]]},
                 {'range': f'O{next_row}', 'values': [[item.get('Keterangan')]]}
             ]
             sheet.batch_update(updates)
