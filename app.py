@@ -150,6 +150,15 @@ with st.container(border=True):
 if st.session_state.daftar_pengajuan:
     st.write("### Daftar Pengajuan")
     st.table(pd.DataFrame(st.session_state.daftar_pengajuan))
+    df_tampil = pd.DataFrame(st.session_state.daftar_pengajuan)
+
+    urutan_kolom = [
+        "No Cust", "Nama", "Barcode", "Prodname", "QTY", "HK", 
+        "Harga Cust", "No Pengajuan", "gap", "persen", "potensi", 
+        "support", "rasio", "Keterangan"
+
+    df_tampil = df_tampil[urutan_kolom]
+    st.table(df_tampil)
     
     if st.button("Generate & Download Excel"):
         try:
