@@ -140,9 +140,20 @@ with st.container(border=True):
 # --- DAFTAR & GENERATE ---
 if st.session_state.daftar_pengajuan:
     st.write("### Daftar Pengajuan")
+    
+    # 1. Buat DataFrame dari list dictionary
     df_tampil = pd.DataFrame(st.session_state.daftar_pengajuan)
+    
+    # 2. Pastikan semua kolom yang kita inginkan ada di DataFrame
+    # Jika ada key yang kurang, kita tambahkan kolom kosong agar tidak error
     kolom_urut = ["No Cust", "Nama", "Barcode", "Prodname", "QTY", "HK", "Harga Cust", 
                   "No Pengajuan", "gap", "persen", "potensi", "support", "rasio", "Keterangan"]
+    
+    for col in kolom_urut:
+        if col not in df_tampil.columns:
+            df_tampil[col] = "" # Isi dengan kosong jika kolom tidak ditemukan
+            
+    # 3. Tampilkan hanya kolom yang diurutkan
     st.table(df_tampil[kolom_urut])
     
     if st.button("Generate & Download Excel"):
@@ -185,4 +196,5 @@ if st.session_state.daftar_pengajuan:
 
     if st.button("Reset Daftar"):
         st.session_state.daftar_pengajuan = []
+        st.rerun()
         st.rerun()
